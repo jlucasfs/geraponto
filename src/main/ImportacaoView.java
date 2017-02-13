@@ -3,6 +3,8 @@ package main;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -18,6 +20,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.commons.lang.StringUtils;
 
+import input.FileReader;
+import model.Collaborator;
+import output.FileWriter;
+import util.MessageDialogUtils;
 import util.TxtFileFilter;
 
 public class ImportacaoView extends JInternalFrame {
@@ -84,7 +90,15 @@ public class ImportacaoView extends JInternalFrame {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = flcArquivo.getSelectedFile();
 					textField.setText(file.getAbsolutePath());
-					extensao = file.getName().substring(file.getName().lastIndexOf('.'));
+//					extensao = file.getName().substring(file.getName().lastIndexOf('.'));
+					try {
+						HashSet<Collaborator> fillTimeTable = FileReader.fillTimeTable(file.getAbsolutePath());
+						FileWriter fileWriter = new FileWriter();
+						fileWriter.processFile(fillTimeTable);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+						MessageDialogUtils.showMessageInformation("Erro ao importar arquivo", "Erro");
+					}
 				}
 			}
 		});

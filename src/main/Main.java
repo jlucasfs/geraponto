@@ -31,17 +31,19 @@ import util.Constantes;
  */
 public class Main extends JFrame {
 
+	private static final long serialVersionUID = 7814972484416064266L;
+
 	static HashSet<Collaborator> collaborators;
 
 	/**
 	 * @param args
 	 */
-	public static void mainOld(String[] args) {
-
-		try {
-			collaborators = FileReader.fillTimeTable();
-			FileWriter fileWriter = new FileWriter();
-			fileWriter.processFile(collaborators);
+//	public static void main(String[] args) {
+//
+//		try {
+//			collaborators = FileReader.fillTimeTable();
+//			FileWriter fileWriter = new FileWriter();
+//			fileWriter.processFile(collaborators);
 
 			// imprimindo lista
 			// for (Collaborator c : collaborators) {
@@ -50,11 +52,11 @@ public class Main extends JFrame {
 			// c.getTimetable().forEach(tt ->
 			// System.out.println(tt.toString()));
 			// }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	private JPanel contentPane;
 
