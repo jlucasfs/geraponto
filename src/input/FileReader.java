@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.stream.Stream;
-
 import model.Collaborator;
 
 /**
@@ -31,10 +30,6 @@ public class FileReader {
 		} catch (IOException e) {
 			throw new IOException("Arquivo " + FILE_COLLABORATORS + " não encontrado");
 		}
-
-		// impressão para teste
-		// colalboratos.stream().forEach(c -> System.out.println(c.getName() + "
-		// " + c.getPis()));
 
 		return colalboratos;
 	}
