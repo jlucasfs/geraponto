@@ -110,7 +110,7 @@ public class FileWriter {
 		cell.setCellValue(collaborator.getName());
 
 		// Insere uma linha vazia para separação
-		row = sheet.createRow(sheet.getLastRowNum() + 1);
+		row = sheet.createRow(sheet.getLastRowNum() + 2);
 
 	}
 
@@ -167,6 +167,7 @@ public class FileWriter {
 				cell.setCellValue(hora.format(hourFormatter));
 			}
 			
+			setColumnNumber(getColumnNumber() + 1);
 			
 			// Inclui cabeçalho para marcações além do limite padrão (4)
 			if (getColumnNumber() > getMaxColumn()) {
@@ -179,7 +180,6 @@ public class FileWriter {
 				row = sheet.getRow(sheet.getLastRowNum());
 			}
 			
-			setColumnNumber(getColumnNumber() + 1);
 			dateComparator = hora.getDayOfYear();
 		}
 		
@@ -196,6 +196,7 @@ public class FileWriter {
 	public void saveFile(String fileName) throws IOException {
 		FileOutputStream out = new FileOutputStream(System.getProperty("user.home") + "\\Documents\\" + fileName);
 		getWorkbook().write(out);
+		out.close();
 	}
 
 	/**
