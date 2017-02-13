@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 import input.FileReader;
 import model.Collaborator;
+import output.FileWriter;
 
 /**
  * @author thiago.lima
@@ -24,12 +25,15 @@ public class Main {
 
 		try {
 			collaborators = FileReader.fillTimeTable();
+			FileWriter fileWriter = new FileWriter();
+			fileWriter.processFile(collaborators);
+					
 			//imprimindo lista
-			for (Collaborator c : collaborators) {
-
-				System.out.println(c.getName());
-				c.getTimetable().forEach(tt -> System.out.println(tt.toString()));
-			}
+//			for (Collaborator c : collaborators) {
+//
+//				System.out.println(c.getName());
+//				c.getTimetable().forEach(tt -> System.out.println(tt.toString()));
+//			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
