@@ -44,8 +44,6 @@ public class ColaboradorView extends JInternalFrame {
 
     private JTextField txtNome;
     
-//    private JComboBox<Countries> comboCountries = new JComboBox<Countries>();
-    
     private JComboBox<Time> comboTimes = new JComboBox<Time>();
 
     private JDesktopPane desktopPane;

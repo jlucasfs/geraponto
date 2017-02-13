@@ -26,12 +26,6 @@ public class ImportacaoView extends JInternalFrame {
 
 	private final ImportacaoView thisview = this;
 
-	private JLabel txtCompeticao = new JLabel();
-
-	private JScrollPane scrollPaneGrupos;
-
-	private JTable tableGrupos;
-
 	private JLabel lblArquivo;
 
 	private JTextField txtCaminhoArquivo;
