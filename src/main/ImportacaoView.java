@@ -46,6 +46,10 @@ public class ImportacaoView extends JInternalFrame {
 	
 	private String extensao;
 
+	private File fileIn;
+	
+	private HashSet<Collaborator> fillTimeTable;
+	
 	public ImportacaoView(JDesktopPane desktopPaneParam) {
 		this.desktopPane = desktopPaneParam;
 
@@ -62,6 +66,15 @@ public class ImportacaoView extends JInternalFrame {
 		JButton btnNewButton = new JButton("Gerar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					fillTimeTable = FileReader.fillTimeTable(fileIn.getAbsolutePath());
+					FileWriter fileWriter = new FileWriter();
+					fileWriter.processFile(fillTimeTable);
+					MessageDialogUtils.showMessageInformation("Arquivo gerado com sucesso", "Geração de arquivo");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					MessageDialogUtils.showMessageInformation("Erro ao importar arquivo", "Erro");
+				}
 			}
 		});
 
@@ -88,17 +101,8 @@ public class ImportacaoView extends JInternalFrame {
 			public void actionPerformed(ActionEvent e) {
 				int returnVal = flcArquivo.showOpenDialog( thisview );
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = flcArquivo.getSelectedFile();
-					textField.setText(file.getAbsolutePath());
-//					extensao = file.getName().substring(file.getName().lastIndexOf('.'));
-					try {
-						HashSet<Collaborator> fillTimeTable = FileReader.fillTimeTable(file.getAbsolutePath());
-						FileWriter fileWriter = new FileWriter();
-						fileWriter.processFile(fillTimeTable);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-						MessageDialogUtils.showMessageInformation("Erro ao importar arquivo", "Erro");
-					}
+					fileIn = flcArquivo.getSelectedFile();
+					textField.setText(fileIn.getAbsolutePath());
 				}
 			}
 		});
