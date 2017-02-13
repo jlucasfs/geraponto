@@ -6,21 +6,21 @@ import java.util.LinkedHashSet;
 
 public class Collaborator {
 
-	long pis;
+	Long pis;
 	String name;
 	LinkedHashSet<LocalDateTime> timetable;
 
-	public Collaborator(long pis, String name) {
+	public Collaborator(Long pis, String name) {
 		this.pis = pis;
 		this.name = name;
 		this.timetable = new LinkedHashSet<>();
 		}
 
-	public long getPis() {
+	public Long getPis() {
 		return pis;
 	}
 
-	public void setPis(long pis) {
+	public void setPis(Long pis) {
 		this.pis = pis;
 	}
 
