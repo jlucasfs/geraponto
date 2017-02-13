@@ -142,9 +142,9 @@ public class Main extends JFrame {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			ColaboradorView item = new ColaboradorView(desktopPane);
-			desktopPane.add(item);
-			item.setVisible(true);
+//			ColaboradorView item = new ColaboradorView(desktopPane);
+//			desktopPane.add(item);
+//			item.setVisible(true);
 		}
 	}
 
