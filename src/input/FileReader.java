@@ -18,7 +18,6 @@ import model.Collaborator;
 public class FileReader {
 
 	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/src/" + "colaboradores.txt";
-	private static final String FILE_TIMETABLE = System.getProperty("user.dir") + "/src/" + "20170202.txt";
 
 	public static HashSet<Collaborator> fillColaborators() throws IOException {
 
@@ -44,18 +43,19 @@ public class FileReader {
 			for(Collaborator c : colalboratos){
 				
 				Stream<String> stream = getStream(fileTimeTable); //pega a entrada
-				stream.filter(line -> line.contains(String.valueOf(c.getPis()))).filter(line -> line.length() == 38) // filtra as linhas pelo tamanho e pis
-						.filter(line -> line.substring(9, 10).equals("3")) //filtra as linhas pelo codigo de operacao
-						.forEach(line -> c.getTimetable().add(LocalDateTime.of(Integer.parseInt(line.substring(14, 18)),//ano
+				stream = stream.filter(line -> line.length() == 38) // filtra as linhas pelo tamanho e pis
+						.filter(line -> line.substring(9, 10).equals("3")); //filtra as linhas pelo codigo de operacao
+						
+				stream.filter(line -> line.contains(String.valueOf(c.getPis())))
+				.forEach(line -> c.getTimetable().add(LocalDateTime.of(Integer.parseInt(line.substring(14, 18)),//ano
 								Integer.parseInt(line.substring(12, 14)),//mes
 								Integer.parseInt(line.substring(10, 12)),//dia
 								Integer.parseInt(line.substring(18, 20)),//hora
 								Integer.parseInt(line.substring(20, 22))))); //minuto
-
 			}
 
 		} catch (IOException e) {
-			throw new IOException("Arquivo " + FILE_TIMETABLE + " nao encontrado");
+			throw new IOException("Arquivo nao encontrado");
 		}
 		return colalboratos;
 	}
