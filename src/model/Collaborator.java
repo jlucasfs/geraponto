@@ -3,9 +3,9 @@ package model;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
-public class colaborador {
+public class Collaborator {
 
 	long pis;
 	String name;
-	HashSet<LocalDateTime> timetble;
+	HashSet<LocalDateTime> timetable;
 }
