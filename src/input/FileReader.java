@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 import model.Collaborator;
 
@@ -37,28 +40,42 @@ public class FileReader {
 		return Files.lines(Paths.get(file));
 	}
 
-	public static HashSet<Collaborator> fillTimeTable( String fileTimeTable ) throws IOException {
-		HashSet<Collaborator> colalboratos = fillColaborators();
+	public static HashSet<Collaborator> fillTimeTable(String fileTimeTable) throws IOException {
+		HashSet<Collaborator> collaborators = fillColaborators();
 		try {
-			for(Collaborator c : colalboratos){
-				
-				Stream<String> stream = getStream(fileTimeTable); //pega a entrada
-				stream = stream.filter(line -> line.length() == 38) // filtra as linhas pelo tamanho e pis
-						.filter(line -> line.substring(9, 10).equals("3")); //filtra as linhas pelo codigo de operacao
-						
-				stream.filter(line -> line.contains(String.valueOf(c.getPis())))
-				.forEach(line -> c.getTimetable().add(LocalDateTime.of(Integer.parseInt(line.substring(14, 18)),//ano
-								Integer.parseInt(line.substring(12, 14)),//mes
-								Integer.parseInt(line.substring(10, 12)),//dia
-								Integer.parseInt(line.substring(18, 20)),//hora
-								Integer.parseInt(line.substring(20, 22))))); //minuto
+			for (Collaborator c : collaborators) {
+				// pega a entrada
+				Stream<String> stream = getStream(fileTimeTable);
+				// filtra as linhas pelo tamanho e pis filtra as linhas pelo
+				// codigo de operacao
+				stream.filter(line -> line.contains(String.valueOf(c.getPis()))).filter(line -> line.length() == 38)
+						.filter(line -> line.substring(9, 10).equals("3"))
+						.forEach(line -> c.getTimetable().add(entryDate(c, line)));
 			}
 
 		} catch (IOException e) {
 			throw new IOException("Arquivo nao encontrado");
 		}
-		return colalboratos;
+
+		return collaborators;
 	}
-	
+
+	private static LocalDateTime entryDate(Collaborator c, String line) {
+
+		LocalDateTime entry = LocalDateTime.of(Integer.parseInt(line.substring(14, 18)), // ano
+				Integer.parseInt(line.substring(12, 14)), // mes
+				Integer.parseInt(line.substring(10, 12)), // dia
+				Integer.parseInt(line.substring(18, 20)), // hora
+				Integer.parseInt(line.substring(20, 22)));// minuto
+		if (c.getName().toUpperCase().contains("MAURILIO") && entry.getDayOfMonth() == 9) {
+			System.out.println("ok");
+		}
+		Optional<LocalDateTime> str = c.getTimetable().stream().filter(tt -> tt.getYear() == entry.getYear())
+				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear()).findFirst();
+		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < 5) {
+			return str.get();
+		}
+		return entry;
+	}
 
 }
