@@ -71,9 +71,9 @@ public class FileReader {
 		//procura data no mesmo periodo
 		Optional<LocalDateTime> str = c.getTimetable().stream().filter(tt -> tt.getYear() == entry.getYear())
 				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear())
-				.filter(tt -> tt.getHour() == entry.getHour()).findFirst();
-		//se a diferença foir maior que 5 minutos vale como entrada nova, se não retorna a mesma data, que é ignorada pelo hashset
-		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < TOLERANCE_MINUTES) {
+				.filter(tt -> tt.getHour() == entry.getHour()).filter(tt-> Math.abs(entry.until(tt, ChronoUnit.MINUTES)) < TOLERANCE_MINUTES).findAny();
+		//se a diferenï¿½a foir maior que 5 minutos vale como entrada nova, se nï¿½o retorna a mesma data, que ï¿½ ignorada pelo hashset
+		if (str.isPresent()) {
 			return str.get();
 		}
 		return entry;
