@@ -13,10 +13,17 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
+import org.apache.poi.hssf.usermodel.HSSFBorderFormatting;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 
 import model.Collaborator;
 
@@ -28,7 +35,7 @@ public class FileWriter {
 
 	private static final Integer INITIAL_CELL = 0;
 	private static final Integer INITIAL_ROW = 0;
-	private static final String SHEET_TITLE = "Folha de Ponto ";
+	private static final String WORKBOOK_TITLE = "Folha de Ponto ";
 	private static final String COLUMN_PIS = "PIS:";
 	private static final String COLUMN_NAME = "Nome:";
 	private static final String COLUMN_DATE = "Data";
@@ -39,6 +46,7 @@ public class FileWriter {
 	private static final String FILE_EXTENSION = ".xls";
 
 	private HSSFWorkbook workbook;
+	private HSSFCellStyle cellStyle;
 	private Integer maxColumn;
 	private Integer columnNumber;
 	private Integer rowNumber;
@@ -46,19 +54,24 @@ public class FileWriter {
 	public FileWriter() {
 		super();
 		this.workbook = new HSSFWorkbook();
+		this.cellStyle = createCellStyle(workbook);
 		this.columnNumber = INITIAL_CELL;
 		this.rowNumber = INITIAL_ROW;
 	}
 
 	/**
-	 * Processa a lista de colaboradores e hor·rios
+	 * Processa a lista de colaboradores e horÔøΩrios
 	 * 
 	 * @param collabList
 	 */
 	public void processFile(HashSet<Collaborator> collabList) {
 
 		for (Collaborator collaborator : collabList) {
-			HSSFSheet sheet = getWorkbook().createSheet(collaborator.getPis().toString());
+			
+			// Preenche o titulo da pasta com o primeiro e o ultimo nome do colaborador
+			String[] sheetTitle = collaborator.getName().split(" ");
+			HSSFSheet sheet = getWorkbook().createSheet(sheetTitle[0] + " " + sheetTitle[sheetTitle.length - 1]);
+			
 			createSheet(sheet, collaborator);
 		}
 
@@ -90,7 +103,7 @@ public class FileWriter {
 	}
 
 	/**
-	 * Cria o cabeÁalho com informaÁıes pessoais do {@link Collaborator}
+	 * Cria o cabe√ßalho com informa√ß√µes pessoais do {@link Collaborator}
 	 * 
 	 * @param sheet
 	 * @param collaborator
@@ -99,23 +112,27 @@ public class FileWriter {
 
 		HSSFRow row = sheet.createRow(INITIAL_ROW);
 		Cell cell = row.createCell(INITIAL_CELL);
-		cell.setCellValue(COLUMN_PIS);
-		cell = row.createCell(INITIAL_CELL + 1);
-		cell.setCellValue(collaborator.getPis());
-
-		row = sheet.createRow(sheet.getLastRowNum() + 1);
-		cell = row.createCell(INITIAL_CELL);
 		cell.setCellValue(COLUMN_NAME);
+		cell.setCellStyle(getCellStyle());
 		cell = row.createCell(INITIAL_CELL + 1);
 		cell.setCellValue(collaborator.getName());
+		cell.setCellStyle(getCellStyle());
+		
+		row = sheet.createRow(sheet.getLastRowNum() + 1);
+		cell = row.createCell(INITIAL_CELL);
+		cell.setCellValue(COLUMN_PIS);
+		cell.setCellStyle(getCellStyle());
+		cell = row.createCell(INITIAL_CELL + 1);
+		cell.setCellValue(collaborator.getPis());
+		cell.setCellStyle(getCellStyle());
 
-		// Insere uma linha vazia para separaÁ„o
+		// Insere uma linha vazia para separa√ß√£o
 		row = sheet.createRow(sheet.getLastRowNum() + 2);
 
 	}
 
 	/**
-	 * Cria uma linha para cada dia trabalhado, listando as marcaÁıes de ponto por hora
+	 * Cria uma linha para cada dia trabalhado, listando as marca√ß√µes de ponto por hora
 	 * @param sheet
 	 * @param collaborator
 	 */
@@ -127,21 +144,26 @@ public class FileWriter {
 		DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern(HOUR_FORMAT);
 		
 		
-		// Armazena a linha do cabeÁalho
+		// Armazena a linha do cabe√ßalho
 		setRowNumber(sheet.getLastRowNum());
 		
-		// CabeÁalho
+		// Cabe√ßalho
 		HSSFRow row = sheet.createRow(sheet.getLastRowNum());
 		Cell cell = row.createCell(getColumnNumber());
 		cell.setCellValue(COLUMN_DATE);
+		cell.setCellStyle(getCellStyle());
 		cell = row.createCell(getColumnNumber() + 1);
 		cell.setCellValue(COLUMN_HOUR + "1");
+		cell.setCellStyle(getCellStyle());
 		cell = row.createCell(getColumnNumber() + 2);
 		cell.setCellValue(COLUMN_HOUR + "2");
+		cell.setCellStyle(getCellStyle());
 		cell = row.createCell(getColumnNumber() + 3);
 		cell.setCellValue(COLUMN_HOUR + "3");
+		cell.setCellStyle(getCellStyle());
 		cell = row.createCell(getColumnNumber() + 4);
 		cell.setCellValue(COLUMN_HOUR + "4");
+		cell.setCellStyle(getCellStyle());
 		setMaxColumn(getColumnNumber()  + 4);
 		
 		// Loop para cada entrada de hora de cada colaborador
@@ -162,14 +184,14 @@ public class FileWriter {
 
 			} else {
 			
-				// Se a data n„o mudou, inclui hora na proxima coluna
+				// Se a data n√£o mudou, inclui hora na proxima coluna
 				cell = row.createCell(getColumnNumber() + 1);
 				cell.setCellValue(hora.format(hourFormatter));
 			}
 			
 			setColumnNumber(getColumnNumber() + 1);
 			
-			// Inclui cabeÁalho para marcaÁıes alÈm do limite padr„o (4)
+			// Inclui cabe√ßalho para marca√ß√µes al√©m do limite padrao (4)
 			if (getColumnNumber() > getMaxColumn()) {
 				row = sheet.getRow(getRowNumber());
 				cell = row.createCell(getMaxColumn() + 1);
@@ -184,16 +206,47 @@ public class FileWriter {
 		}
 		
 	}
+	
+	/**
+	 * Cria estilo para c√©lulas de cabe√ßalho
+	 * @param workbook
+	 * @return
+	 */
+	public HSSFCellStyle createCellStyle(HSSFWorkbook workbook) {
+		
+		HSSFCellStyle style = workbook.createCellStyle();
+		
+		style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		style.setBorderLeft(HSSFBorderFormatting.BORDER_THIN);
+		style.setBorderRight(HSSFBorderFormatting.BORDER_THIN);
+		style.setBorderTop(HSSFBorderFormatting.BORDER_THIN);
+		style.setBorderBottom(HSSFBorderFormatting.BORDER_THIN);
+//		style.setLocked(true);
+		
+		return style;
+	}
 
+	/**
+	 * Gera o nome do arquivo a partir da data e hora corrente
+	 * @return
+	 */
 	public String generateFileName() {
 		SimpleDateFormat format = new SimpleDateFormat(DATE_HOUR_FORMAT, Locale.getDefault());
 		Date today = new Date();
-		String fileName = SHEET_TITLE + format.format(today) + FILE_EXTENSION;
+		String fileName = WORKBOOK_TITLE + format.format(today) + FILE_EXTENSION;
 
 		return fileName;
 	}
 
+	/**
+	 * Salva o arquivo .xls na pasta Documents do usu√°rio
+	 * 
+	 * @param fileName
+	 * @throws IOException
+	 */
 	public void saveFile(String fileName) throws IOException {
+		// TODO A ser melhorado. Por enquanto s√≥ ir√° funcionar no Windows
 		FileOutputStream out = new FileOutputStream(System.getProperty("user.home") + "\\Documents\\" + fileName);
 		getWorkbook().write(out);
 		out.close();
@@ -212,6 +265,20 @@ public class FileWriter {
 	 */
 	public void setWorkbook(HSSFWorkbook workbook) {
 		this.workbook = workbook;
+	}
+
+	/**
+	 * @return the cellStyle
+	 */
+	public HSSFCellStyle getCellStyle() {
+		return cellStyle;
+	}
+
+	/**
+	 * @param cellStyle the cellStyle to set
+	 */
+	public void setCellStyle(HSSFCellStyle cellStyle) {
+		this.cellStyle = cellStyle;
 	}
 
 	/**
