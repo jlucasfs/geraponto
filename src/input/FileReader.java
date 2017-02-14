@@ -21,6 +21,7 @@ import model.Collaborator;
 public class FileReader {
 
 	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/src/" + "colaboradores.txt";
+	private static final Integer TOLERANCE_MINUTES = 5;
 
 	public static HashSet<Collaborator> fillColaborators() throws IOException {
 
@@ -69,9 +70,10 @@ public class FileReader {
 				Integer.parseInt(line.substring(20, 22)));// minuto
 		//procura data no mesmo periodo
 		Optional<LocalDateTime> str = c.getTimetable().stream().filter(tt -> tt.getYear() == entry.getYear())
-				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear()).findFirst();
+				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear())
+				.filter(tt -> tt.getHour() == entry.getHour()).findFirst();
 		//se a diferença foir maior que 5 minutos vale como entrada nova, se não retorna a mesma data, que é ignorada pelo hashset
-		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < 5) {
+		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < TOLERANCE_MINUTES) {
 			return str.get();
 		}
 		return entry;
