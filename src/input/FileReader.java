@@ -20,7 +20,7 @@ import model.Collaborator;
  */
 public class FileReader {
 
-	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/src/" + "colaboradores.txt";
+	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/colaboradores.txt";
 	private static final Integer TOLERANCE_MINUTES = 5;
 
 	public static HashSet<Collaborator> fillColaborators() throws IOException {
