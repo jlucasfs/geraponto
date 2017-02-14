@@ -67,11 +67,10 @@ public class FileReader {
 				Integer.parseInt(line.substring(10, 12)), // dia
 				Integer.parseInt(line.substring(18, 20)), // hora
 				Integer.parseInt(line.substring(20, 22)));// minuto
-		if (c.getName().toUpperCase().contains("MAURILIO") && entry.getDayOfMonth() == 9) {
-			System.out.println("ok");
-		}
+		//procura data no mesmo periodo
 		Optional<LocalDateTime> str = c.getTimetable().stream().filter(tt -> tt.getYear() == entry.getYear())
 				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear()).findFirst();
+		//se a diferença foir maior que 5 minutos vale como entrada nova, se não retorna a mesma data, que é ignorada pelo hashset
 		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < 5) {
 			return str.get();
 		}
