@@ -1,6 +1,3 @@
-/**
- * 
- */
 package input;
 
 import java.io.IOException;
@@ -8,10 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import model.Collaborator;
 
 /**
@@ -20,7 +17,7 @@ import model.Collaborator;
  */
 public class FileReader {
 
-	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/src/" + "colaboradores.txt";
+	private static final String FILE_COLLABORATORS = System.getProperty("user.dir") + "/colaboradores.txt";
 
 	public static HashSet<Collaborator> fillColaborators() throws IOException {
 
@@ -70,7 +67,7 @@ public class FileReader {
 		//procura data no mesmo periodo
 		Optional<LocalDateTime> str = c.getTimetable().stream().filter(tt -> tt.getYear() == entry.getYear())
 				.filter(tt -> tt.getDayOfYear() == entry.getDayOfYear()).findFirst();
-		//se a diferença foir maior que 5 minutos vale como entrada nova, se não retorna a mesma data, que é ignorada pelo hashset
+		//se a diferenï¿½a foir maior que 5 minutos vale como entrada nova, se nï¿½o retorna a mesma data, que ï¿½ ignorada pelo hashset
 		if (str.isPresent() && Math.abs(entry.until(str.get(), ChronoUnit.MINUTES)) < 5) {
 			return str.get();
 		}
