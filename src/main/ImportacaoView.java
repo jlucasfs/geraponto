@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import input.FileReader;
 import model.Collaborator;
 import output.FileWriter;
+import output.ReportType;
 import util.MessageDialogUtils;
 import util.TxtFileFilter;
 
@@ -67,7 +68,7 @@ public class ImportacaoView extends JInternalFrame {
 				try {
 					fillTimeTable = FileReader.fillTimeTable(fileIn.getAbsolutePath());
 					FileWriter fileWriter = new FileWriter();
-					fileWriter.processFile(fillTimeTable);
+					fileWriter.processFile(fillTimeTable, ReportType.CONSOLIDATED);
 					MessageDialogUtils.showMessageInformation("Arquivo gerado com sucesso", "Geração de arquivo");
 				} catch (IOException e1) {
 					e1.printStackTrace();
