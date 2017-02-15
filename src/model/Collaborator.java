@@ -1,8 +1,12 @@
 package model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class Collaborator {
 
@@ -38,6 +42,24 @@ public class Collaborator {
 
 	public void setTimetable(LinkedHashSet<LocalDateTime> timetable) {
 		this.timetable = timetable;
+	}
+	
+	public HashMap<LocalDate, LinkedHashSet<LocalTime>> getTimeTableByDay(){
+		HashMap<LocalDate, LinkedHashSet<LocalTime>> listByDate = new HashMap<>();
+		for (LocalDateTime localDateTime : getTimetable()) {
+			listByDate.put(localDateTime.toLocalDate(), retornaHorarios(localDateTime,getTimetable()));
+		}
+		return listByDate;
+	}
+
+	private LinkedHashSet<LocalTime> retornaHorarios(LocalDateTime localDateTime, HashSet<LocalDateTime> timetable2) {
+		LinkedHashSet<LocalTime> localTime = new LinkedHashSet<LocalTime>();
+		for (LocalDateTime lt : timetable2) {
+			if(lt.toLocalDate().isEqual(localDateTime.toLocalDate())){
+				localTime.add(lt.toLocalTime());
+			}
+		}
+		return localTime;
 	}
 	
 	
