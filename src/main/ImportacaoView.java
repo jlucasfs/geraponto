@@ -68,7 +68,7 @@ public class ImportacaoView extends JInternalFrame {
 				try {
 					fillTimeTable = FileReader.fillTimeTable(fileIn.getAbsolutePath());
 					FileWriter fileWriter = new FileWriter();
-					fileWriter.processFile(fillTimeTable, ReportType.CONSOLIDATED);
+					fileWriter.processFile(fillTimeTable, ReportType.RAW);
 					MessageDialogUtils.showMessageInformation("Arquivo gerado com sucesso", "Geração de arquivo");
 				} catch (IOException e1) {
 					e1.printStackTrace();

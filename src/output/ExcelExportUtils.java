@@ -3,12 +3,20 @@
  */
 package output;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.poi.hssf.usermodel.HSSFBorderFormatting;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -22,6 +30,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
  *
  */
 public class ExcelExportUtils {
+	private static final String USER_DIR = "user.dir";
+	private static final String EXCEL_DEFAULT = "/Ponto_GW_ANS.xls";
 
 	/**
 	 * Gera um nome de arquivo a partir da data e hora corrente
@@ -80,5 +90,12 @@ public class ExcelExportUtils {
 		workbook.write(out);
 		out.close();
 	}
-	
+
+	public static HSSFWorkbook readDefaultWorkbook() throws IOException {
+		String filename = System.getProperty(USER_DIR) + EXCEL_DEFAULT;
+		FileInputStream inputStream = new FileInputStream(new File(filename));
+		HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
+				
+		return workbook;
+	}
 }

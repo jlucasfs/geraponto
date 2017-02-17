@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -44,8 +45,8 @@ public class Collaborator {
 		this.timetable = timetable;
 	}
 	
-	public HashMap<LocalDate, LinkedHashSet<LocalTime>> getTimeTableByDay(){
-		HashMap<LocalDate, LinkedHashSet<LocalTime>> listByDate = new HashMap<>();
+	public LinkedHashMap<LocalDate, LinkedHashSet<LocalTime>> getTimeTableByDay(){
+		LinkedHashMap<LocalDate, LinkedHashSet<LocalTime>> listByDate = new LinkedHashMap<>();
 		for (LocalDateTime localDateTime : getTimetable()) {
 			listByDate.put(localDateTime.toLocalDate(), retornaHorarios(localDateTime,getTimetable()));
 		}

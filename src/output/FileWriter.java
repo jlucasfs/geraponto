@@ -5,9 +5,14 @@ package output;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -62,34 +67,35 @@ public class FileWriter {
 	 * @param collabList
 	 */
 	public void processFile(HashSet<Collaborator> collabList, ReportType type) {
-
-		HSSFSheet sheet;
 		
-		switch (type) {
-		case RAW:
-			sheet = getWorkbook().createSheet("Colaboradores");
-			createRawSheet(sheet, collabList);
-			break;
-			
-		case CONSOLIDATED:
-			for (Collaborator collaborator : collabList) {
-				
-				// Preenche o titulo da pasta com o primeiro e o ultimo nome do colaborador
-				String[] sheetTitle = collaborator.getName().split(BLANK_SPACE);
-				sheet = getWorkbook().createSheet(sheetTitle[0] + BLANK_SPACE + sheetTitle[sheetTitle.length - 1]);
-				
-				createSheet(sheet, collaborator);
-			}
-			
-			break;
-		}
-
-		// Cria nome do arquivo e filepath
-		String fileName = ExcelExportUtils.generateFileName(DATE_HOUR_FORMAT, WORKBOOK_TITLE, FILE_EXTENSION);
-		String filepath = System.getProperty(USER_HOME) + DOCUMENTS_FOLDER + fileName;
-
 		try {
-			ExcelExportUtils.saveFile(getWorkbook(), filepath);
+			HSSFSheet sheet;
+			
+			switch (type) {
+			case RAW:
+				setWorkbook(ExcelExportUtils.readDefaultWorkbook());
+				sheet = getWorkbook().getSheet("Dados");
+				createRawSheet(sheet, collabList);
+				break;
+				
+			case CONSOLIDATED:
+				for (Collaborator collaborator : collabList) {
+					
+					// Preenche o titulo da pasta com o primeiro e o ultimo nome do colaborador
+					String[] sheetTitle = collaborator.getName().split(BLANK_SPACE);
+					sheet = getWorkbook().createSheet(sheetTitle[0] + BLANK_SPACE + sheetTitle[sheetTitle.length - 1]);
+					
+					createSheet(sheet, collaborator);
+				}
+				
+				break;
+			}
+	
+			// Cria nome do arquivo e filepath
+			String fileName = ExcelExportUtils.generateFileName(DATE_HOUR_FORMAT, WORKBOOK_TITLE, FILE_EXTENSION);
+			String filepath = System.getProperty(USER_HOME) + DOCUMENTS_FOLDER + fileName;
+	
+				ExcelExportUtils.saveFile(getWorkbook(), filepath);
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -157,59 +163,30 @@ public class FileWriter {
 	 * @param collabList
 	 */
 	public void createRawSheet(HSSFSheet sheet, HashSet<Collaborator> collabList) {
+		int cellCount = 1;
+		int rowCount = 2;
+		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+		DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern(HOUR_FORMAT);
 		
-		HSSFRow row = sheet.createRow(INITIAL_ROW);
-		Cell cell = row.createCell(INITIAL_CELL);
-		cell.setCellValue(COLUMN_PIS);
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_NAME);
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_DATE);
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_HOUR + "1");
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_HOUR + "2");
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_HOUR + "3");
-		cell.setCellStyle(getHeaderStyle());
-		cell = row.createCell((int) row.getLastCellNum());
-		cell.setCellValue(COLUMN_HOUR + "4");
-		cell.setCellStyle(getHeaderStyle());
+		HSSFRow row = sheet.getRow(rowCount);
+		Cell cell = row.getCell(cellCount);
 				
 		for (Collaborator collaborator : collabList) {
-			createRawInfo(sheet, collaborator);
-			LocalDateTime dateComparator = null;
-			int hourCount = 1;
+			LinkedHashMap<LocalDate, LinkedHashSet<LocalTime>> dateMap = collaborator.getTimeTableByDay();
 			
-			for (LocalDateTime time : collaborator.getTimetable()) {
-				if (hourCount > 4) {
-					row = sheet.createRow(INITIAL_ROW);
-					cell = row.createCell(hourCount + 2);
-					cell.setCellValue(COLUMN_HOUR + hourCount);
-					cell.setCellStyle(getHeaderStyle());
-					row = sheet.getRow(sheet.getLastRowNum());
-				}
+			for (HashMap.Entry<LocalDate, LinkedHashSet<LocalTime>> entry : dateMap.entrySet()) {
+				row = sheet.getRow(rowCount++);
+				cell = row.createCell(cellCount++);
+				cell.setCellValue(collaborator.getName());
+				cell = row.createCell(cellCount++);
+				cell.setCellValue(dateFormatter.format(entry.getKey()));
 				
-				if (dateComparator == null) {
-					cell = row.createCell((int) row.getLastCellNum());
-					cell.setCellValue(time.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
+				for (LocalTime time : entry.getValue()) {
 					
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(hourFormatter.format(time));
 				}
-				if (dateComparator != null && dateComparator.getDayOfYear() != time.getDayOfYear()) {
-					createRawInfo(sheet, collaborator);
-					hourCount = 1;
-				}
-				
-				cell = row.createCell((int) row.getLastCellNum());
-				cell.setCellValue(time.format(DateTimeFormatter.ofPattern(HOUR_FORMAT)));
-				
-				dateComparator = time;
-				hourCount++;
+				cellCount = 1;
 			}
 		}
 	}
