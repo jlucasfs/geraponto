@@ -176,6 +176,10 @@ public class FileWriter {
 			
 			for (HashMap.Entry<LocalDate, LinkedHashSet<LocalTime>> entry : dateMap.entrySet()) {
 				row = sheet.getRow(rowCount++);
+				if (row == null) {
+					row = sheet.createRow(rowCount++);
+				}
+				
 				cell = row.createCell(cellCount++);
 				cell.setCellValue(collaborator.getName());
 				cell = row.createCell(cellCount++);
