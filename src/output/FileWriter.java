@@ -175,9 +175,9 @@ public class FileWriter {
 			LinkedHashMap<LocalDate, LinkedHashSet<LocalTime>> dateMap = collaborator.getTimeTableByDay();
 			
 			for (HashMap.Entry<LocalDate, LinkedHashSet<LocalTime>> entry : dateMap.entrySet()) {
-				row = sheet.getRow(rowCount++);
+				row = sheet.getRow(rowCount);
 				if (row == null) {
-					row = sheet.createRow(rowCount++);
+					row = sheet.createRow(rowCount);
 				}
 				
 				cell = row.createCell(cellCount++);
@@ -191,6 +191,7 @@ public class FileWriter {
 					cell.setCellValue(hourFormatter.format(time));
 				}
 				cellCount = 1;
+				rowCount++;
 			}
 		}
 	}
