@@ -4,10 +4,6 @@
 package input;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -28,7 +24,6 @@ public class FileReader {
 	private static final Integer TOLERANCE_MINUTES = 5;
 
 	public static HashSet<Collaborator> fillColaborators() throws IOException {
-
 		HashSet<Collaborator> colalboratos = new HashSet<>();
 		try (Stream<String> stream = getStream(FILE_COLLABORATORS)) {
 
@@ -40,22 +35,30 @@ public class FileReader {
 
 		return colalboratos;
 	}
-
+	
+	private static void setEnconcingToFile(String file) throws IOException{
+		byte[] sourceBytes = Files.readAllBytes(Paths.get(file));
+		String data = new String(sourceBytes);
+		byte[] destinationBytes = data.getBytes("UTF-8");
+		data = new String(destinationBytes);
+		Files.write(Paths.get(file), destinationBytes);
+	}
+	
 	private static Stream<String> getStream(String file) throws IOException {
-		return Files.lines(Paths.get(file), StandardCharsets.UTF_8);
+		setEnconcingToFile(file);
+		return Files.lines(Paths.get(file));
 	}
 
 	public static HashSet<Collaborator> fillTimeTable(String fileTimeTable) throws IOException {
 		HashSet<Collaborator> collaborators = fillColaborators();
 		try {
-			CharsetDecoder dec = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPLACE);
+			
 			for (Collaborator c : collaborators) {
 				// pega a entrada
 				Stream<String> stream = getStream(fileTimeTable);
 				// filtra as linhas pelo tamanho e pis filtra as linhas pelo
 				// codigo de operacao
-				stream.filter(line -> !line.contains(dec.replacement()))
-						.filter(line -> line.contains(String.valueOf(c.getPis()))).filter(line -> line.length() == 38)
+				stream.filter(line -> line.contains(String.valueOf(c.getPis()))).filter(line -> line.length() == 38)
 						.filter(line -> line.substring(9, 10).equals("3"))
 						.forEach(line -> c.getTimetable().add(entryDate(c, line)));
 			}
@@ -68,8 +71,6 @@ public class FileReader {
 	}
 
 	private static LocalDateTime entryDate(Collaborator c, String line) {
-		System.out.println(c.getName());
-		System.out.println(line);
 		LocalDateTime entry = LocalDateTime.of(Integer.parseInt(line.substring(14, 18)), // ano
 				Integer.parseInt(line.substring(12, 14)), // mes
 				Integer.parseInt(line.substring(10, 12)), // dia
