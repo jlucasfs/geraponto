@@ -3,7 +3,11 @@
  */
 package input;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -35,15 +39,21 @@ public class FileReader {
 
 		return colalboratos;
 	}
-	
-	private static void setEnconcingToFile(String file) throws IOException{
+
+	private static void setEnconcingToFile(String file) throws IOException {
 		byte[] sourceBytes = Files.readAllBytes(Paths.get(file));
 		String data = new String(sourceBytes);
 		byte[] destinationBytes = data.getBytes("UTF-8");
 		data = new String(destinationBytes);
-		Files.write(Paths.get(file), destinationBytes);
+		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+		try {
+			out.write(data);
+		} finally {
+			out.close();
+		}
+//		Files.write(Paths.get(file), destinationBytes);
 	}
-	
+
 	private static Stream<String> getStream(String file) throws IOException {
 		setEnconcingToFile(file);
 		return Files.lines(Paths.get(file));
@@ -52,7 +62,7 @@ public class FileReader {
 	public static HashSet<Collaborator> fillTimeTable(String fileTimeTable) throws IOException {
 		HashSet<Collaborator> collaborators = fillColaborators();
 		try {
-			
+
 			for (Collaborator c : collaborators) {
 				// pega a entrada
 				Stream<String> stream = getStream(fileTimeTable);

@@ -18,7 +18,7 @@ public class Scrap {
 	static final String DIR = System.getProperty("user.home") + "\\Downloads";
 
 	public static String getFullFile() {
-		System.setProperty("phantomjs.binary.path", System.getProperty("user.dir") + "\\chromedriver.exe");
+		System.setProperty("chrome.binary.path", System.getProperty("user.dir") + "\\chromedriver.exe");
 
 		driver = new ChromeDriver();
 		try {
